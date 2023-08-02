@@ -70,3 +70,8 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+/[Aa]ssets/Oculus/
+/[Aa]ssets/TextMesh Pro/
+/*_BackUpThisFolder_ButDontShipItWithYourGame/
+
+/Analysis/home_20230629
