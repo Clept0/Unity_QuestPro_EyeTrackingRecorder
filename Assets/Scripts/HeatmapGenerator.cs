@@ -3,28 +3,36 @@ using UnityEngine;
 
 public class HeatmapGenerator : MonoBehaviour
 {
-    public GameObject gazePointPrefab;
+    [SerializeField]
+    private ParticleSystem gazePointParticles; // Particle system to be spawned at gaze point
     private OVREyeGaze ovrEyeGaze;
 
-    public float spawnCooldown = 0.1f;
+    [SerializeField]
+    private float spawnCooldown = 0.1f; // The cooldown between each spawn of the particle system
     private float spawnTimer;
 
-    public int maxGazePoints = 1000;
-    private Queue<GameObject> gazePoints = new Queue<GameObject>();
+    [SerializeField]
+    private int maxGazePoints = 1000; // Maximum number of gaze points
+    private Queue<ParticleSystem> gazePoints = new Queue<ParticleSystem>(); // Collection of active gaze points
 
-    public float gazePointDistance = 10.0f;
+    [SerializeField]
+    private Color minColor = Color.blue; // Color representing low density
+    [SerializeField]
+    private Color maxColor = Color.red; // Color representing high density
 
-    public Color minColor = Color.blue; // Farbe für niedrige Dichte
-    public Color maxColor = Color.red; // Farbe für hohe Dichte
+    [SerializeField]
+    private float colorChangeSpeed = 1.0f; // Speed at which color changes from min to max color
 
-    public float colorChangeSpeed = 1.0f; // Geschwindigkeit der Färbung
+    private Dictionary<Vector3Int, int> gazeDensity = new Dictionary<Vector3Int, int>(); // Holds the density of gaze points
+    [SerializeField]
+    private int gridSize = 5; // Size of the grid cell
 
-    private Dictionary<Vector3Int, int> gazeDensity = new Dictionary<Vector3Int, int>();
-    public int gridSize = 5; // Größe der Grid-Zellen
+    [SerializeField]
+    private float spawnOffset = 0.1f; // Offset for the spawning location of the particle system
 
     private void Awake()
     {
-        ovrEyeGaze = GetComponent<OVREyeGaze>();
+        ovrEyeGaze = GetComponent<OVREyeGaze>(); // Access the OVREyeGaze component
     }
 
     void Update()
@@ -34,27 +42,31 @@ public class HeatmapGenerator : MonoBehaviour
         spawnTimer += Time.deltaTime;
         if (spawnTimer < spawnCooldown) return;
 
-        var gazePosition = transform.position + transform.forward * gazePointDistance;
+        RaycastHit hit;
+        if (!Physics.Raycast(transform.position, transform.forward, out hit)) return;
+
+        var gazePosition = hit.point + hit.normal * spawnOffset; // Add offset to the gaze point
         var gridPosition = Vector3Int.FloorToInt(gazePosition / gridSize);
 
-        // Dichte aktualisieren
+        // Update density
         if (!gazeDensity.ContainsKey(gridPosition))
             gazeDensity[gridPosition] = 0;
         gazeDensity[gridPosition]++;
 
-        // Farbe basierend auf der Dichte berechnen
+        // Calculate color based on density
         float density = gazeDensity[gridPosition];
         Color color = Color.Lerp(minColor, maxColor, density / (maxGazePoints * colorChangeSpeed));
 
-        // Gaze-Punkt mit Farbe erstellen
-        var newGazePoint = Instantiate(gazePointPrefab, gazePosition, Quaternion.identity);
-        newGazePoint.GetComponent<Renderer>().material.color = color;
+        // Create gaze point with particles
+        var newGazePoint = Instantiate(gazePointParticles, gazePosition, Quaternion.identity);
+        var mainModule = newGazePoint.main;
+        mainModule.startColor = color;
 
         gazePoints.Enqueue(newGazePoint);
         if (gazePoints.Count > maxGazePoints)
         {
             var oldestGazePoint = gazePoints.Dequeue();
-            Destroy(oldestGazePoint);
+            Destroy(oldestGazePoint.gameObject); // Destroy the oldest gaze point
         }
 
         spawnTimer = 0f;
