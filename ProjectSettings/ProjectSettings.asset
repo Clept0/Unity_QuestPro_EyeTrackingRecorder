@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: QuestPro
+  productName: EyeTrackingRecorder
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -136,8 +136,6 @@ PlayerSettings:
   bundleVersion: 0.1
   preloadedAssets:
   - {fileID: 11400000, guid: 89c664c5ba7aa9545a038d4a367ffb49, type: 2}
-  - {fileID: 6986759752555883523, guid: cd8c38b68a4b6b64b86c0c0676aec465, type: 2}
-  - {fileID: 11400000, guid: b6629204532376449bf63933d66c3ee7, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -157,7 +155,7 @@ PlayerSettings:
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
-    Android: com.DefaultCompany.QuestPro
+    Android: com.DefaultCompany.EyeTrackingRecorder
     Standalone: com.DefaultCompany.New-Unity-Project--2-
   buildNumber:
     Standalone: 0
